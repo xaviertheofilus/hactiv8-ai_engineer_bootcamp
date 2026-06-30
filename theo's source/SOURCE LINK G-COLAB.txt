@@ -1,0 +1,38 @@
+SOURCE LINK GCOLLAB:
+SQL DDL - https://colab.research.google.com/drive/1iDfmujaJN0KFRmy6JTsqePYKxb7FgkUS?usp=sharing
+DQL, Grouping , Aggregate Function, Index & Explain Query - https://colab.research.google.com/drive/1BlogNCAOWQwjBxM8R5iYqX79x9OTwTqP?usp=sharing
+JOIN, subquery dan CTE - https://colab.research.google.com/drive/1NLM5IN72XNr8F2lkUozkuRCaUBpoT0Aj?usp=sharing
+Latihan Statistika Deskriptif - https://colab.research.google.com/drive/1EUXgmPAAfZS2e2h9NOxF4W8H532WG2lA?usp=sharing
+Basic python - https://colab.research.google.com/drive/1jZ1pKXHbVRX1xWN-B5KjDIgG7Wv0NUJ2?usp=sharing
+Loop Python - https://colab.research.google.com/drive/1lSOC59H4NXdTWLfecrLQQWo0Aa-F6oiu?usp=sharing
+funct python - https://colab.research.google.com/drive/1fmW6xi6SL4kyTb8gIWo5VOH8dPZtUgwy?usp=sharing
+OOP - https://colab.research.google.com/github/FTDS-learning-materials/phase-0/blob/v2.3/w1/P0W1D4AM_Object_Oriented_Programming.ipynb
+Basic FastAPI - https://colab.research.google.com/github/FTDS-learning-materials/phase-0/blob/v2.4/w3/P0W3D2AM%20-%20API%20-%20Basic%20Syntax.ipynb
+Pandas, data cleaning - https://colab.research.google.com/drive/1ajiAtGZ3yYqbVLmiruuvzHbKshD3vwmx?usp=sharing#scrollTo=CCIfurnQR2IJ
+Data exploration - https://colab.research.google.com/drive/1ajiAtGZ3yYqbVLmiruuvzHbKshD3vwmx?usp=sharing
+Data cleaning - https://colab.research.google.com/drive/1FNmoC2CZEf_92_-LHWZQnyGDdGqU7e7q?usp=sharing
+Data visualization - https://colab.research.google.com/drive/1y5zd6AiwlvcBnSW8nGxasGfCZaxFx721?usp=sharing
+Statistic deskriptif - https://colab.research.google.com/drive/1KyfIMHF-qorFH_5G3BwKKK96zTk9X8jo?usp=sharing
+Statistic inferential - https://colab.research.google.com/drive/19Jd95nC-Osfm4sDXP4RDFLiAEqRjm2b8?usp=sharing
+linear regression - https://colab.research.google.com/drive/1-qstCdA8x_mSEzAhRYT4dPK2fW4HbaAo?usp=sharing
+Feature eng, cross val - https://colab.research.google.com/drive/1cGU5qzu4YusScTkeR-jU6gn2fY3M4CEs?usp=sharing
+feature eng 2 -https://colab.research.google.com/drive/1QEzRIx3IggXUbIc7TnOX7kiFhjWbJtel?usp=sharing
+regulation, og regression, model eval - https://colab.research.google.com/drive/1MKFgwJhTqRQ7c8UhPXIIaznd5gCjryTx?usp=sharing
+ene ml - https://colab.research.google.com/drive/1K4MyEqdgf6lE8VIktvR28SWEvTwMG-2p?usp=sharing
+clustering - https://colab.research.google.com/drive/1OkJm7oOB97AwfMnKu2oUBmOOskved_zu?usp=sharing
+pca-kmeans - https://colab.research.google.com/drive/1OJtIlhK7ZGZv_bCZazkE5bvWGdfUwfAQ?usp=sharing
+ANN - https://colab.research.google.com/github/FTDS-learning-materials/phase-2/blob/v2.3/w1/P2W1D1PM%20-%20Artificial%20Neural%20Network%20(ANN)%20-%20Hands%20On%20-%20Binary%20Classification%20-%20Inference.ipynb
+
+https://colab.research.google.com/github/FTDS-learning-materials/phase-2/blob/v2.3/w1/P2W1D1PM%20-%20Artificial%20Neural%20Network%20(ANN)%20-%20Hands%20On%20-%20Multiclass%20Classification.ipynb
+
+https://colab.research.google.com/github/FTDS-learning-materials/phase-2/blob/v2.3/w1/P2W1D1PM%20-%20Artificial%20Neural%20Network%20(ANN)%20-%20Hands%20On%20-%20Binary%20Classification%20-%20Training.ipynb
+
+
+
+
+
+
+
+
+
+

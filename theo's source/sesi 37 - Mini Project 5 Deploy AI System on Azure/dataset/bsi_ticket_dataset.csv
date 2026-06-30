@@ -1,0 +1,151 @@
+ticket_id,subject,sop_classification,priority,status
+TKT-2605-0001,Immediate offboarding request,SOP-011,High,Resolved
+TKT-2605-0002,Locked out of SAP P01,SOP-004,High,Open
+TKT-2605-0003,Convert to shared mailbox,SOP-011,Medium,Open
+TKT-2605-0004,Account creation for new staff,SOP-010,High,Open
+TKT-2605-0005,Locked out of SAP P01,SOP-004,High,Open
+TKT-2605-0006,Install MS Visio for project,SOP-009,Low,Closed
+TKT-2605-0007,AutoCAD installation request,SOP-009,Medium,Closed
+TKT-2605-0008,SU53 authorization error ME21N,SOP-005,Medium,In Progress
+TKT-2605-0009,Vendor guest access to Teams,SOP-012,Low,In Progress
+TKT-2605-0010,User locked by administrator in SAP,SOP-004,Medium,Resolved
+TKT-2605-0011,New phone MFA setup,SOP-002,Medium,Closed
+TKT-2605-0012,SU53 authorization error ME21N,SOP-005,Medium,Closed
+TKT-2605-0013,Not receiving MFA prompt,SOP-002,High,Resolved
+TKT-2605-0014,Convert to shared mailbox,SOP-011,Medium,Resolved
+TKT-2605-0015,New hire onboarding setup,SOP-010,Medium,Open
+TKT-2605-0016,Immediate offboarding request,SOP-011,High,Open
+TKT-2605-0017,SAP password incorrect,SOP-004,Medium,Resolved
+TKT-2605-0018,Disable AD account for resigned user,SOP-011,High,Resolved
+TKT-2605-0019,User locked by administrator in SAP,SOP-004,Medium,Closed
+TKT-2605-0020,Immediate offboarding request,SOP-011,High,In Progress
+TKT-2605-0021,Install MS Visio for project,SOP-009,Low,Resolved
+TKT-2605-0022,Cannot access finance T-Code,SOP-005,Medium,Escalated
+TKT-2605-0023,Cannot connect to corporate wifi,SOP-013,Medium,Open
+TKT-2605-0024,Need guest wifi voucher for VIP,SOP-013,High,Open
+TKT-2605-0025,User locked by administrator in SAP,SOP-004,Medium,Resolved
+TKT-2605-0026,Cannot print from SAP,SOP-007,Medium,In Progress
+TKT-2605-0027,User locked by administrator in SAP,SOP-004,Medium,Resolved
+TKT-2605-0028,Account creation for new staff,SOP-010,Medium,In Progress
+TKT-2605-0029,AutoCAD installation request,SOP-009,High,Open
+TKT-2605-0030,Microsoft Authenticator not working,SOP-002,High,Escalated
+TKT-2605-0031,Disable AD account for resigned user,SOP-011,High,Resolved
+TKT-2605-0032,Cannot print from SAP,SOP-007,Medium,Closed
+TKT-2605-0033,VPN error -14 when connecting,SOP-001,High,Closed
+TKT-2605-0034,Need guest wifi voucher for VIP,SOP-013,High,Resolved
+TKT-2605-0035,New phone MFA setup,SOP-002,Medium,Resolved
+TKT-2605-0036,Cannot connect to internal network via VPN,SOP-001,High,Escalated
+TKT-2605-0037,AD Account locked out,SOP-003,High,Resolved
+TKT-2605-0038,Convert to shared mailbox,SOP-011,Medium,In Progress
+TKT-2605-0039,Mailbox full error 5.2.2,SOP-006,Low,Escalated
+TKT-2605-0040,Need Adobe Creative Cloud license,SOP-009,Low,Resolved
+TKT-2605-0041,VPN error -14 when connecting,SOP-001,High,Escalated
+TKT-2605-0042,Need guest wifi voucher for VIP,SOP-013,High,In Progress
+TKT-2605-0043,New hire onboarding setup,SOP-010,High,Resolved
+TKT-2605-0044,Microsoft Authenticator not working,SOP-002,High,Resolved
+TKT-2605-0045,Install MS Visio for project,SOP-009,Low,Escalated
+TKT-2605-0046,Account creation for new staff,SOP-010,Medium,Closed
+TKT-2605-0047,MITSUBISHI-CORP wifi dropping,SOP-013,Medium,Closed
+TKT-2605-0048,No roles exist for user menu,SOP-005,Low,Closed
+TKT-2605-0049,Outlook search not working,SOP-006,Low,Resolved
+TKT-2605-0050,Microsoft Authenticator not working,SOP-002,High,Resolved
+TKT-2605-0051,FortiClient stuck at 80%,SOP-001,Medium,Open
+TKT-2605-0052,Need MFA reset - lost phone,SOP-002,High,Open
+TKT-2605-0053,Outlook says disconnected,SOP-006,Medium,Resolved
+TKT-2605-0054,Disable AD account for resigned user,SOP-011,High,In Progress
+TKT-2605-0055,Cannot access SharePoint site,SOP-012,Medium,In Progress
+TKT-2605-0056,Need guest wifi voucher for VIP,SOP-013,High,In Progress
+TKT-2605-0057,Need MFA reset - lost phone,SOP-002,High,Resolved
+TKT-2605-0058,Cannot print from SAP,SOP-007,Medium,Closed
+TKT-2605-0059,VPN error -14 when connecting,SOP-001,High,Closed
+TKT-2605-0060,Outlook says disconnected,SOP-006,Medium,In Progress
+TKT-2605-0061,AutoCAD installation request,SOP-009,Medium,In Progress
+TKT-2605-0062,No roles exist for user menu,SOP-005,Low,Open
+TKT-2605-0063,Request new wireless mouse,SOP-008,High,Closed
+TKT-2605-0064,VPN error -14 when connecting,SOP-001,High,Escalated
+TKT-2605-0065,Locked out of SAP P01,SOP-004,High,Resolved
+TKT-2605-0066,Need SAP initial password,SOP-004,Low,In Progress
+TKT-2605-0067,Print job stuck in queue,SOP-007,Low,Resolved
+TKT-2605-0068,Need guest wifi voucher for VIP,SOP-013,High,Closed
+TKT-2605-0069,Cannot access SharePoint site,SOP-012,Medium,Resolved
+TKT-2605-0070,Forgot windows laptop password,SOP-003,Medium,Open
+TKT-2605-0071,IT provisioning for Budi,SOP-010,Medium,Closed
+TKT-2605-0072,Outlook says disconnected,SOP-006,High,Resolved
+TKT-2605-0073,Install MS Visio for project,SOP-009,High,Closed
+TKT-2605-0074,Microsoft Authenticator not working,SOP-002,High,Open
+TKT-2605-0075,Immediate offboarding request,SOP-011,High,Closed
+TKT-2605-0076,SAP password incorrect,SOP-004,Medium,Resolved
+TKT-2605-0077,Convert to shared mailbox,SOP-011,Medium,Resolved
+TKT-2605-0078,Cannot access finance T-Code,SOP-005,Medium,Resolved
+TKT-2605-0079,User locked by administrator in SAP,SOP-004,Medium,Closed
+TKT-2605-0080,Disable AD account for resigned user,SOP-011,High,Escalated
+TKT-2605-0081,Need MFA reset - lost phone,SOP-002,High,Closed
+TKT-2605-0082,Need MFA reset - lost phone,SOP-002,High,Closed
+TKT-2605-0083,Cannot access finance T-Code,SOP-005,Medium,Open
+TKT-2605-0084,User locked by administrator in SAP,SOP-004,Medium,Resolved
+TKT-2605-0085,Cannot find 7-zip in software center,SOP-009,Low,Escalated
+TKT-2605-0086,Convert to shared mailbox,SOP-011,High,Escalated
+TKT-2605-0087,Cannot find 7-zip in software center,SOP-009,Low,Open
+TKT-2605-0088,AD password reset request,SOP-003,Medium,Open
+TKT-2605-0089,Cannot access SharePoint site,SOP-012,Medium,Resolved
+TKT-2605-0090,New hire onboarding setup,SOP-010,Medium,In Progress
+TKT-2605-0091,Convert to shared mailbox,SOP-011,Medium,Closed
+TKT-2605-0092,Need docking station for WFH,SOP-008,Low,Escalated
+TKT-2605-0093,VPN error -14 when connecting,SOP-001,High,Escalated
+TKT-2605-0094,SU53 authorization error ME21N,SOP-005,High,Escalated
+TKT-2605-0095,AD password reset request,SOP-003,Medium,Resolved
+TKT-2605-0096,AutoCAD installation request,SOP-009,Medium,Open
+TKT-2605-0097,Microsoft Authenticator not working,SOP-002,High,Escalated
+TKT-2605-0098,Mailbox full error 5.2.2,SOP-006,Low,Open
+TKT-2605-0099,Missing SAP roles,SOP-005,Low,Escalated
+TKT-2605-0100,Cannot connect to internal network via VPN,SOP-001,High,In Progress
+TKT-2605-0101,Immediate offboarding request,SOP-011,High,Closed
+TKT-2605-0102,How to map floor 5 printer,SOP-007,Low,In Progress
+TKT-2605-0103,Forgot windows laptop password,SOP-003,Medium,Open
+TKT-2605-0104,AD password reset request,SOP-003,Medium,Resolved
+TKT-2605-0105,MITSUBISHI-CORP wifi dropping,SOP-013,Medium,Escalated
+TKT-2605-0106,User locked by administrator in SAP,SOP-004,Medium,Closed
+TKT-2605-0107,Not receiving MFA prompt,SOP-002,High,Escalated
+TKT-2605-0108,Laptop keyboard broken,SOP-008,Medium,Resolved
+TKT-2605-0109,Emails stuck in outbox,SOP-006,Medium,Escalated
+TKT-2605-0110,Locked out of SAP P01,SOP-004,High,In Progress
+TKT-2605-0111,Printer offline Cikarang factory,SOP-007,Medium,Open
+TKT-2605-0112,Need guest wifi voucher for VIP,SOP-013,High,Closed
+TKT-2605-0113,Printer offline Cikarang factory,SOP-007,Medium,Open
+TKT-2605-0114,Cannot access finance T-Code,SOP-005,Medium,Resolved
+TKT-2605-0115,VPN error -14 when connecting,SOP-001,High,Resolved
+TKT-2605-0116,Vendor guest access to Teams,SOP-012,Low,Closed
+TKT-2605-0117,Not receiving MFA prompt,SOP-002,High,In Progress
+TKT-2605-0118,SU53 authorization error ME21N,SOP-005,Medium,Open
+TKT-2605-0119,Install MS Visio for project,SOP-009,Low,Open
+TKT-2605-0120,Disable AD account for resigned user,SOP-011,High,Closed
+TKT-2605-0121,New phone MFA setup,SOP-002,Medium,Closed
+TKT-2605-0122,Printer offline Cikarang factory,SOP-007,Medium,Resolved
+TKT-2605-0123,Install MS Visio for project,SOP-009,Low,Closed
+TKT-2605-0124,How to map floor 5 printer,SOP-007,Low,Resolved
+TKT-2605-0125,Print job stuck in queue,SOP-007,Low,In Progress
+TKT-2605-0126,Printer offline Cikarang factory,SOP-007,Medium,Resolved
+TKT-2605-0127,Immediate offboarding request,SOP-011,High,Escalated
+TKT-2605-0128,MITSUBISHI-CORP wifi dropping,SOP-013,Medium,Open
+TKT-2605-0129,Missing SAP roles,SOP-005,High,Escalated
+TKT-2605-0130,User locked by administrator in SAP,SOP-004,Medium,In Progress
+TKT-2605-0131,AD Account locked out,SOP-003,High,Resolved
+TKT-2605-0132,New hire onboarding setup,SOP-010,Medium,Closed
+TKT-2605-0133,New hire onboarding setup,SOP-010,Medium,Resolved
+TKT-2605-0134,Laptop replacement request,SOP-008,Low,Closed
+TKT-2605-0135,Create new private Teams group,SOP-012,Low,Escalated
+TKT-2605-0136,Cannot connect to corporate wifi,SOP-013,Medium,In Progress
+TKT-2605-0137,Frequent account lockout,SOP-003,High,In Progress
+TKT-2605-0138,Not receiving MFA prompt,SOP-002,High,Resolved
+TKT-2605-0139,Convert to shared mailbox,SOP-011,Medium,Closed
+TKT-2605-0140,Outlook search not working,SOP-006,Low,Closed
+TKT-2605-0141,AutoCAD installation request,SOP-009,Medium,Closed
+TKT-2605-0142,Laptop keyboard broken,SOP-008,Medium,Resolved
+TKT-2605-0143,Need docking station for WFH,SOP-008,Low,Escalated
+TKT-2605-0144,Disable AD account for resigned user,SOP-011,High,Closed
+TKT-2605-0145,Laptop keyboard broken,SOP-008,Medium,Open
+TKT-2605-0146,Vendor guest access to Teams,SOP-012,Low,Resolved
+TKT-2605-0147,Outlook says disconnected,SOP-006,Medium,In Progress
+TKT-2605-0148,How to map floor 5 printer,SOP-007,Low,Open
+TKT-2605-0149,Cannot print from SAP,SOP-007,Medium,Resolved
+TKT-2605-0150,Print job stuck in queue,SOP-007,Low,Resolved

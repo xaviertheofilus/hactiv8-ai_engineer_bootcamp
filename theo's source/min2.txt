@@ -1,0 +1,126 @@
+
+## Slide 1 — Background
+
+Sejak tahun 2020, industri teknologi global mengalami gelombang PHK (layoff) yang belum pernah terjadi sebelumnya. Dataset ini mencatat **1.850 kejadian layoff** dari **74 perusahaan** di **18 negara**, mencakup lebih dari **8,2 juta karyawan** yang terdampak dalam rentang waktu Januari 2020 hingga Februari 2026.
+
+Puncak layoff terjadi pada **2023** dengan total **2,28 juta karyawan** ter-PHK. Salah satu tren yang paling mengkhawatirkan adalah meningkatnya layoff yang didorong oleh **Artificial Intelligence (AI)** — baik karena otomasi menggantikan pekerjaan manusia maupun karena perusahaan melakukan pivot ke strategi AI-first. Proporsi AI-related layoff meningkat drastis dari hanya **11,1% di 2020** menjadi **37,8% di 2026**.
+
+---
+
+## Slide 2 — Problem Statement
+
+Pertanyaan utama yang ingin dijawab:
+
+> **Dapatkah kita memprediksi apakah suatu kejadian layoff dipicu oleh faktor AI — hanya berdasarkan karakteristik perusahaan dan konteks layoff — tanpa mengetahui alasan eksplisitnya?**
+
+Dataset memiliki kolom `is_ai_related_layoff` (True/False) sebagai target. Tantangan utama:
+- **Class imbalance**: 79,5% Non-AI vs 20,5% AI-related
+- **Data leakage**: Kolom `primary_reason` secara sempurna memprediksi target (harus di-drop)
+- Sinyal prediktif lemah dari fitur yang tersisa → model harus benar-benar belajar dari pola data
+
+---
+
+## Slide 3 — Objective
+
+Membangun pipeline Machine Learning yang dapat:
+1. Mengidentifikasi pola-pola yang membedakan AI-related layoff dari Non-AI layoff
+2. Melatih dan membandingkan 2 algoritma: **Random Forest** dan **XGBoost**
+3. Melakukan **Hyperparameter Tuning** dengan RandomizedSearchCV (20 iterasi, 5-Fold Stratified CV)
+4. Menangani class imbalance dengan `class_weight='balanced'` (RF) dan `scale_pos_weight` (XGB)
+5. Mengevaluasi model dengan metrik ROC-AUC, Precision, Recall, dan F1-Score
+
+---
+
+## Slide 4 — Dataset & EDA
+
+**Dataset Overview:**
+- **1.850 kejadian layoff** | **22 fitur** | Periode 2020–2026
+- **49 industri** | **18 negara** | **5 kontinen**
+- Hanya 1 kolom missing: `stock_price_change_1wk_pct` (24,9% null — semua dari perusahaan Private)
+
+**Insight Utama dari EDA:**
+- Layoff terbesar terjadi di **2023** (2,28 juta karyawan)
+- **United States** mendominasi dengan **4,57 juta karyawan** ter-PHK (55,6% dari total)
+- **E-Commerce / Cloud** adalah industri dengan total layoff terbesar (2,14 juta)
+- AI-related layoff meningkat tajam mulai **2024 (31,1%)** dan **2026 (37,8%)**
+- Uji Chi-Square menunjukkan **industri** berpengaruh signifikan (p < 0.05) terhadap status AI layoff
+- Uji Mann-Whitney U menunjukkan **year** adalah pembeda numerik terkuat
+
+---
+
+## Slide 5 — Feature Engineering & Preprocessing
+
+**Fitur yang dibuat:**
+| Fitur Baru | Keterangan |
+|---|---|
+| `company_age` | Umur perusahaan saat layoff (year - founded_year) |
+| `layoff_ratio` | Proporsi layoff vs ukuran perusahaan |
+| `is_public` | Flag perusahaan publik/privat |
+| `stock_null` | Flag: tidak ada data harga saham (proxy untuk perusahaan private) |
+| `stock_filled` | Harga saham, null diisi 0 |
+| `dept_count` | Jumlah departemen yang terdampak |
+| `has_ai_dept` | Apakah departemen AI/Data Science terdampak |
+| `log_comp_size` | Log ukuran perusahaan (menangani skewness) |
+| `log_laid_off` | Log jumlah layoff (menangani skewness) |
+
+**Catatan Penting:** Kolom `primary_reason` di-**DROP** karena menyebabkan **data leakage** sempurna (100% memprediksi target).
+
+---
+
+## Slide 6 — Model Development & Hyperparameter Tuning
+
+**Strategi:**
+- Train-Test Split: 80% train / 20% test (stratified)
+- Cross Validation: 5-Fold Stratified K-Fold
+- Tuning: RandomizedSearchCV (n_iter=20, total 100 fits per model)
+- Metrik utama: **ROC-AUC** (robust terhadap class imbalance)
+
+**Best Params Random Forest:**
+- `n_estimators=300`, `max_depth=5`, `min_samples_split=2`, `min_samples_leaf=2`, `class_weight='balanced'`
+
+**Best Params XGBoost:**
+- `n_estimators=100`, `max_depth=3`, `learning_rate=0.01`, `subsample=0.7`, `colsample_bytree=0.8`, `gamma=0.2`
+- `scale_pos_weight ≈ 3.87` (rasio kelas negatif/positif)
+
+---
+
+## Slide 7 — Hasil Evaluasi Model
+
+| Metrik | Random Forest | XGBoost |
+|---|---|---|
+| **CV AUC (mean ± std)** | 0.6488 ± 0.0197 | **0.6547 ± 0.0240** |
+| **Test AUC** | 0.6196 | **0.6203** |
+| **Test Accuracy** | 63.5% | 60.3% |
+| **Precision (AI class)** | 30.5% | 28.2% |
+| **Recall (AI class)** | 60.5% | 60.5% |
+| **F1 (AI class)** | 0.405 | 0.385 |
+
+**🏆 Model Terbaik: XGBoost** (CV AUC = 0.6547)
+
+**Interpretasi:**
+- Kedua model memiliki performa lebih baik dari random classifier (AUC = 0.50)
+- Recall AI class ~60,5% → model berhasil mendeteksi **6 dari 10 kejadian AI layoff** yang sebenarnya
+- Precision rendah (~28–30%) → model cenderung over-predict AI layoff (banyak false positive)
+- **Fitur terpenting: `year`** (dominan ≥30%), diikuti `layoff_ratio`, `stock_filled`, `industry_enc`, `percentage_of_workforce`
+
+---
+
+## Slide 8 — Kesimpulan & Rekomendasi
+
+**Kesimpulan:**
+1. Kedua model (Random Forest & XGBoost) mampu memprediksi AI-related layoff dengan **ROC-AUC ~0.62–0.66**, di atas baseline random (0.50)
+2. Performa sedang ini **wajar** karena: fitur terkuat (`primary_reason`) di-drop untuk mencegah leakage, AI layoff tidak bisa diprediksi sempurna dari karakteristik perusahaan saja, dan dataset memiliki class imbalance signifikan (4:1)
+3. **Tahun kejadian** adalah fitur terpenting — AI-related layoff meningkat tajam mulai 2024, mengindikasikan tren otomasi AI yang akseleratif
+4. Industri **E-Commerce/Gaming**, **Data/AI**, dan **Biotech/AI** memiliki proporsi AI layoff tertinggi (>33%)
+5. Dari sisi bisnis, model ini lebih berguna sebagai **screening tool** (mendeteksi potential AI layoff) daripada classifier presisi tinggi
+
+**Rekomendasi (Future Improvement):**
+1. **Data tambahan**: Tambahkan fitur NLP dari deskripsi layoff, berita perusahaan, atau filing SEC untuk sinyal lebih kaya
+2. **Algoritma lain**: Coba LightGBM, CatBoost, atau Ensemble stacking untuk performa lebih baik
+3. **SMOTE/Oversampling**: Terapkan SMOTE atau class resampling untuk menangani imbalance lebih agresif
+4. **Threshold tuning**: Sesuaikan decision threshold berdasarkan kebutuhan bisnis (prioritaskan Recall jika deteksi dini lebih penting)
+5. **Business application**: Model ini dapat digunakan HR department dan investor sebagai **early warning system** terhadap risiko AI displacement di industri tertentu
+
+---
+
+*Dikerjakan sebagai Mini Project 2 — Hacktivu AI Training Program*

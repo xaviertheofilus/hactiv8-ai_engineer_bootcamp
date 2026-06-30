@@ -1,0 +1,3 @@
+Model,Avg Groundedness,Avg Relevance,Avg Coherence,Avg Fluency,Latency P95 (s),Avg Tokens / call,Length pass rate
+gpt-4o-mini,3.8,3.9,4.15,4.35,3.989,241.1,60.0
+gpt-4.1-mini,4.3,4.35,4.35,4.35,3.462,256.9,75.0

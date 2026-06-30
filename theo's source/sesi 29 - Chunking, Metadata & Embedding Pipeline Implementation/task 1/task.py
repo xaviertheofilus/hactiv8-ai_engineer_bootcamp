@@ -1,0 +1,790 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "01faf96f",
+   "metadata": {},
+   "source": [
+    "# Task 1: Telco Search\n",
+    "## Hybrid Search\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "27c9383d",
+   "metadata": {},
+   "source": [
+    "Setup"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "39e74e9a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting PyPDF2\n",
+      "  Downloading pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)\n",
+      "Requirement already satisfied: rank_bm25 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (0.2.2)\n",
+      "Requirement already satisfied: sentence-transformers in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (5.5.0)\n",
+      "Requirement already satisfied: chromadb in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (1.5.9)\n",
+      "Requirement already satisfied: pinecone-client in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (6.0.0)\n",
+      "Requirement already satisfied: pandas in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (3.0.2)\n",
+      "Requirement already satisfied: numpy in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (2.4.4)\n",
+      "Requirement already satisfied: python-dotenv in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (1.2.1)\n",
+      "Collecting langchain-text-splitters\n",
+      "  Downloading langchain_text_splitters-1.1.2-py3-none-any.whl.metadata (3.3 kB)\n",
+      "Requirement already satisfied: transformers<6.0.0,>=4.41.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sentence-transformers) (5.8.1)\n",
+      "Requirement already satisfied: huggingface-hub>=0.23.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sentence-transformers) (1.15.0)\n",
+      "Requirement already satisfied: torch>=1.11.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sentence-transformers) (2.12.0)\n",
+      "Requirement already satisfied: scikit-learn>=0.22.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sentence-transformers) (1.7.1)\n",
+      "Requirement already satisfied: scipy>=1.0.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sentence-transformers) (1.17.1)\n",
+      "Requirement already satisfied: typing_extensions>=4.5.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sentence-transformers) (4.15.0)\n",
+      "Requirement already satisfied: tqdm>=4.0.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sentence-transformers) (4.67.3)\n",
+      "Requirement already satisfied: packaging>=20.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from transformers<6.0.0,>=4.41.0->sentence-transformers) (26.0)\n",
+      "Requirement already satisfied: pyyaml>=5.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from transformers<6.0.0,>=4.41.0->sentence-transformers) (6.0.3)\n",
+      "Requirement already satisfied: regex>=2025.10.22 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from transformers<6.0.0,>=4.41.0->sentence-transformers) (2026.5.9)\n",
+      "Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from transformers<6.0.0,>=4.41.0->sentence-transformers) (0.22.2)\n",
+      "Requirement already satisfied: typer in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from transformers<6.0.0,>=4.41.0->sentence-transformers) (0.20.0)\n",
+      "Requirement already satisfied: safetensors>=0.4.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from transformers<6.0.0,>=4.41.0->sentence-transformers) (0.7.0)\n",
+      "Requirement already satisfied: filelock>=3.10.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from huggingface-hub>=0.23.0->sentence-transformers) (3.29.0)\n",
+      "Requirement already satisfied: fsspec>=2023.5.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from huggingface-hub>=0.23.0->sentence-transformers) (2026.4.0)\n",
+      "Requirement already satisfied: hf-xet<2.0.0,>=1.4.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from huggingface-hub>=0.23.0->sentence-transformers) (1.5.0)\n",
+      "Requirement already satisfied: httpx<1,>=0.23.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from huggingface-hub>=0.23.0->sentence-transformers) (0.28.1)\n",
+      "Requirement already satisfied: anyio in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from httpx<1,>=0.23.0->huggingface-hub>=0.23.0->sentence-transformers) (4.12.1)\n",
+      "Requirement already satisfied: certifi in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from httpx<1,>=0.23.0->huggingface-hub>=0.23.0->sentence-transformers) (2026.4.22)\n",
+      "Requirement already satisfied: httpcore==1.* in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from httpx<1,>=0.23.0->huggingface-hub>=0.23.0->sentence-transformers) (1.0.9)\n",
+      "Requirement already satisfied: idna in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from httpx<1,>=0.23.0->huggingface-hub>=0.23.0->sentence-transformers) (3.11)\n",
+      "Requirement already satisfied: h11>=0.16 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from httpcore==1.*->httpx<1,>=0.23.0->huggingface-hub>=0.23.0->sentence-transformers) (0.16.0)\n",
+      "Requirement already satisfied: build>=1.0.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (1.5.0)\n",
+      "Requirement already satisfied: pydantic>=2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (2.13.2)\n",
+      "Requirement already satisfied: pydantic-settings>=2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (2.12.0)\n",
+      "Requirement already satisfied: pybase64>=1.4.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (1.4.3)\n",
+      "Requirement already satisfied: uvicorn>=0.18.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from uvicorn[standard]>=0.18.3->chromadb) (0.40.0)\n",
+      "Requirement already satisfied: onnxruntime>=1.14.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (1.26.0)\n",
+      "Requirement already satisfied: opentelemetry-api>=1.2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (1.41.1)\n",
+      "Requirement already satisfied: opentelemetry-exporter-otlp-proto-grpc>=1.2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (1.41.1)\n",
+      "Requirement already satisfied: opentelemetry-sdk>=1.2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (1.41.1)\n",
+      "Requirement already satisfied: pypika>=0.48.9 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (0.51.1)\n",
+      "Requirement already satisfied: overrides>=7.3.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (7.7.0)\n",
+      "Requirement already satisfied: importlib-resources in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (7.1.0)\n",
+      "Requirement already satisfied: grpcio>=1.58.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (1.80.0)\n",
+      "Requirement already satisfied: bcrypt>=4.0.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (5.0.0)\n",
+      "Requirement already satisfied: kubernetes>=28.1.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (35.0.0)\n",
+      "Requirement already satisfied: tenacity>=8.2.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (9.1.4)\n",
+      "Requirement already satisfied: mmh3>=4.0.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (5.2.1)\n",
+      "Requirement already satisfied: orjson>=3.9.12 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (3.11.9)\n",
+      "Requirement already satisfied: rich>=10.11.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (14.2.0)\n",
+      "Requirement already satisfied: jsonschema>=4.19.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from chromadb) (4.26.0)\n",
+      "Requirement already satisfied: pinecone-plugin-interface<0.0.8,>=0.0.7 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from pinecone-client) (0.0.7)\n",
+      "Requirement already satisfied: python-dateutil>=2.5.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from pinecone-client) (2.9.0.post0)\n",
+      "Requirement already satisfied: urllib3>=1.26.5 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from pinecone-client) (2.6.3)\n",
+      "Requirement already satisfied: tzdata in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from pandas) (2025.3)\n",
+      "Collecting langchain-core<2.0.0,>=1.2.31 (from langchain-text-splitters)\n",
+      "  Downloading langchain_core-1.4.0-py3-none-any.whl.metadata (4.5 kB)\n",
+      "Collecting jsonpatch<2.0.0,>=1.33.0 (from langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading jsonpatch-1.33-py2.py3-none-any.whl.metadata (3.0 kB)\n",
+      "Collecting langchain-protocol>=0.0.14 (from langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading langchain_protocol-0.0.15-py3-none-any.whl.metadata (2.4 kB)\n",
+      "Collecting langsmith<1.0.0,>=0.3.45 (from langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading langsmith-0.8.5-py3-none-any.whl.metadata (15 kB)\n",
+      "Collecting uuid-utils<1.0,>=0.12.0 (from langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading uuid_utils-0.15.0-cp312-cp312-win_amd64.whl.metadata (6.7 kB)\n",
+      "Collecting jsonpointer>=1.9 (from jsonpatch<2.0.0,>=1.33.0->langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading jsonpointer-3.1.1-py3-none-any.whl.metadata (2.4 kB)\n",
+      "Collecting requests-toolbelt>=1.0.0 (from langsmith<1.0.0,>=0.3.45->langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading requests_toolbelt-1.0.0-py2.py3-none-any.whl.metadata (14 kB)\n",
+      "Requirement already satisfied: requests>=2.0.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from langsmith<1.0.0,>=0.3.45->langchain-core<2.0.0,>=1.2.31->langchain-text-splitters) (2.33.1)\n",
+      "Collecting xxhash>=3.0.0 (from langsmith<1.0.0,>=0.3.45->langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading xxhash-3.7.0-cp312-cp312-win_amd64.whl.metadata (13 kB)\n",
+      "Collecting zstandard>=0.23.0 (from langsmith<1.0.0,>=0.3.45->langchain-core<2.0.0,>=1.2.31->langchain-text-splitters)\n",
+      "  Downloading zstandard-0.25.0-cp312-cp312-win_amd64.whl.metadata (3.3 kB)\n",
+      "Requirement already satisfied: annotated-types>=0.6.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from pydantic>=2.0->chromadb) (0.6.0)\n",
+      "Requirement already satisfied: pydantic-core==2.46.2 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from pydantic>=2.0->chromadb) (2.46.2)\n",
+      "Requirement already satisfied: typing-inspection>=0.4.2 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from pydantic>=2.0->chromadb) (0.4.2)\n",
+      "Requirement already satisfied: pyproject_hooks in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from build>=1.0.3->chromadb) (1.2.0)\n",
+      "Requirement already satisfied: colorama in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from build>=1.0.3->chromadb) (0.4.6)\n",
+      "Requirement already satisfied: attrs>=22.2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from jsonschema>=4.19.0->chromadb) (26.1.0)\n",
+      "Requirement already satisfied: jsonschema-specifications>=2023.03.6 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from jsonschema>=4.19.0->chromadb) (2025.9.1)\n",
+      "Requirement already satisfied: referencing>=0.28.4 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from jsonschema>=4.19.0->chromadb) (0.37.0)\n",
+      "Requirement already satisfied: rpds-py>=0.25.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from jsonschema>=4.19.0->chromadb) (0.30.0)\n",
+      "Requirement already satisfied: six>=1.9.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from kubernetes>=28.1.0->chromadb) (1.17.0)\n",
+      "Requirement already satisfied: websocket-client!=0.40.0,!=0.41.*,!=0.42.*,>=0.32.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from kubernetes>=28.1.0->chromadb) (1.9.0)\n",
+      "Requirement already satisfied: requests-oauthlib in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from kubernetes>=28.1.0->chromadb) (2.0.0)\n",
+      "Requirement already satisfied: durationpy>=0.7 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from kubernetes>=28.1.0->chromadb) (0.10)\n",
+      "Requirement already satisfied: flatbuffers in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from onnxruntime>=1.14.1->chromadb) (25.12.19)\n",
+      "Requirement already satisfied: protobuf in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from onnxruntime>=1.14.1->chromadb) (5.29.6)\n",
+      "Requirement already satisfied: importlib-metadata<8.8.0,>=6.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from opentelemetry-api>=1.2.0->chromadb) (8.7.1)\n",
+      "Requirement already satisfied: zipp>=3.20 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from importlib-metadata<8.8.0,>=6.0->opentelemetry-api>=1.2.0->chromadb) (3.23.1)\n",
+      "Requirement already satisfied: googleapis-common-protos~=1.57 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from opentelemetry-exporter-otlp-proto-grpc>=1.2.0->chromadb) (1.75.0)\n",
+      "Requirement already satisfied: opentelemetry-exporter-otlp-proto-common==1.41.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from opentelemetry-exporter-otlp-proto-grpc>=1.2.0->chromadb) (1.41.1)\n",
+      "Requirement already satisfied: opentelemetry-proto==1.41.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from opentelemetry-exporter-otlp-proto-grpc>=1.2.0->chromadb) (1.41.1)\n",
+      "Requirement already satisfied: opentelemetry-semantic-conventions==0.62b1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from opentelemetry-sdk>=1.2.0->chromadb) (0.62b1)\n",
+      "Requirement already satisfied: charset_normalizer<4,>=2 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from requests>=2.0.0->langsmith<1.0.0,>=0.3.45->langchain-core<2.0.0,>=1.2.31->langchain-text-splitters) (3.4.4)\n",
+      "Requirement already satisfied: markdown-it-py>=2.2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from rich>=10.11.0->chromadb) (4.0.0)\n",
+      "Requirement already satisfied: pygments<3.0.0,>=2.13.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from rich>=10.11.0->chromadb) (2.20.0)\n",
+      "Requirement already satisfied: mdurl~=0.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from markdown-it-py>=2.2.0->rich>=10.11.0->chromadb) (0.1.2)\n",
+      "Requirement already satisfied: joblib>=1.2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from scikit-learn>=0.22.0->sentence-transformers) (1.5.3)\n",
+      "Requirement already satisfied: threadpoolctl>=3.1.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from scikit-learn>=0.22.0->sentence-transformers) (3.5.0)\n",
+      "Requirement already satisfied: setuptools<82 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from torch>=1.11.0->sentence-transformers) (81.0.0)\n",
+      "Requirement already satisfied: sympy>=1.13.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from torch>=1.11.0->sentence-transformers) (1.14.0)\n",
+      "Requirement already satisfied: networkx>=2.5.1 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from torch>=1.11.0->sentence-transformers) (3.6.1)\n",
+      "Requirement already satisfied: jinja2 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from torch>=1.11.0->sentence-transformers) (3.1.6)\n",
+      "Requirement already satisfied: mpmath<1.4,>=1.1.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from sympy>=1.13.3->torch>=1.11.0->sentence-transformers) (1.3.0)\n",
+      "Requirement already satisfied: click>=8.0.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from typer->transformers<6.0.0,>=4.41.0->sentence-transformers) (8.2.1)\n",
+      "Requirement already satisfied: shellingham>=1.3.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from typer->transformers<6.0.0,>=4.41.0->sentence-transformers) (1.5.4)\n",
+      "Requirement already satisfied: httptools>=0.6.3 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from uvicorn[standard]>=0.18.3->chromadb) (0.7.1)\n",
+      "Requirement already satisfied: watchfiles>=0.13 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from uvicorn[standard]>=0.18.3->chromadb) (1.1.1)\n",
+      "Requirement already satisfied: websockets>=10.4 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from uvicorn[standard]>=0.18.3->chromadb) (15.0.1)\n",
+      "Requirement already satisfied: MarkupSafe>=2.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from jinja2->torch>=1.11.0->sentence-transformers) (3.0.2)\n",
+      "Requirement already satisfied: oauthlib>=3.0.0 in d:\\Users\\bsi80274\\.conda\\envs\\ai-training\\Lib\\site-packages (from requests-oauthlib->kubernetes>=28.1.0->chromadb) (3.3.1)\n",
+      "Downloading pypdf2-3.0.1-py3-none-any.whl (232 kB)\n",
+      "Downloading langchain_text_splitters-1.1.2-py3-none-any.whl (35 kB)\n",
+      "Downloading langchain_core-1.4.0-py3-none-any.whl (548 kB)\n",
+      "   ---------------------------------------- 0.0/548.1 kB ? eta -:--:--\n",
+      "   ---------------------------------------- 548.1/548.1 kB 4.6 MB/s  0:00:00\n",
+      "Downloading jsonpatch-1.33-py2.py3-none-any.whl (12 kB)\n",
+      "Downloading langsmith-0.8.5-py3-none-any.whl (399 kB)\n",
+      "Downloading uuid_utils-0.15.0-cp312-cp312-win_amd64.whl (173 kB)\n",
+      "Downloading jsonpointer-3.1.1-py3-none-any.whl (7.7 kB)\n",
+      "Downloading langchain_protocol-0.0.15-py3-none-any.whl (7.0 kB)\n",
+      "Downloading requests_toolbelt-1.0.0-py2.py3-none-any.whl (54 kB)\n",
+      "Downloading xxhash-3.7.0-cp312-cp312-win_amd64.whl (31 kB)\n",
+      "Downloading zstandard-0.25.0-cp312-cp312-win_amd64.whl (506 kB)\n",
+      "Installing collected packages: zstandard, xxhash, uuid-utils, PyPDF2, langchain-protocol, jsonpointer, requests-toolbelt, jsonpatch, langsmith, langchain-core, langchain-text-splitters\n",
+      "\n",
+      "   ---------- -----------------------------  3/11 [PyPDF2]\n",
+      "   ---------- -----------------------------  3/11 [PyPDF2]\n",
+      "   -------------- -------------------------  4/11 [langchain-protocol]\n",
+      "   --------------------- ------------------  6/11 [requests-toolbelt]\n",
+      "   ----------------------------- ----------  8/11 [langsmith]\n",
+      "   ----------------------------- ----------  8/11 [langsmith]\n",
+      "   ----------------------------- ----------  8/11 [langsmith]\n",
+      "   ----------------------------- ----------  8/11 [langsmith]\n",
+      "   ----------------------------- ----------  8/11 [langsmith]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   -------------------------------- -------  9/11 [langchain-core]\n",
+      "   ---------------------------------------- 11/11 [langchain-text-splitters]\n",
+      "\n",
+      "Successfully installed PyPDF2-3.0.1 jsonpatch-1.33 jsonpointer-3.1.1 langchain-core-1.4.0 langchain-protocol-0.0.15 langchain-text-splitters-1.1.2 langsmith-0.8.5 requests-toolbelt-1.0.0 uuid-utils-0.15.0 xxhash-3.7.0 zstandard-0.25.0\n",
+      "Note: you may need to restart the kernel to use updated packages.\n"
+     ]
+    }
+   ],
+   "source": [
+    "pip install PyPDF2 rank_bm25 sentence-transformers chromadb pinecone-client pandas numpy python-dotenv langchain-text-splitters\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b0c90049",
+   "metadata": {},
+   "source": [
+    "Setup"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "161d395a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Semua library berhasil diimpor.\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os\n",
+    "import PyPDF2\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "from dotenv import load_dotenv\n",
+    "import warnings\n",
+    "warnings.filterwarnings('ignore')\n",
+    "\n",
+    "# Keyword Search\n",
+    "from rank_bm25 import BM25Okapi\n",
+    "\n",
+    "# Semantic Search\n",
+    "from sentence_transformers import SentenceTransformer\n",
+    "\n",
+    "# Vector Database\n",
+    "import chromadb\n",
+    "from pinecone import Pinecone, ServerlessSpec\n",
+    "\n",
+    "# Chunking\n",
+    "from langchain_text_splitters import RecursiveCharacterTextSplitter\n",
+    "\n",
+    "load_dotenv(override=True)\n",
+    "\n",
+    "print(\"Semua library berhasil diimpor.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "405bd9d3",
+   "metadata": {},
+   "source": [
+    "Extract PDF"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ed300aaa",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Berhasil membaca 8 halaman dari docs_telco_v2.pdf\n"
+     ]
+    }
+   ],
+   "source": [
+    "def extract_text_from_pdf(pdf_path):\n",
+    "    try:\n",
+    "        reader = PyPDF2.PdfReader(pdf_path)\n",
+    "        pages_data = []\n",
+    "        for i, page in enumerate(reader.pages):\n",
+    "            text = page.extract_text()\n",
+    "            if text:\n",
+    "                # Membersihkan teks dari enter berlebih\n",
+    "                clean_text = \" \".join(text.split())\n",
+    "                pages_data.append({\n",
+    "                    \"text\": clean_text,\n",
+    "                    \"metadata\": {\"page\": i + 1, \"source\": pdf_path}\n",
+    "                })\n",
+    "        print(f\"Berhasil membaca {len(pages_data)} halaman dari {pdf_path}\")\n",
+    "        return pages_data\n",
+    "    except FileNotFoundError:\n",
+    "        print(f\"File {pdf_path} tidak ditemukan!\")\n",
+    "        return []\n",
+    "\n",
+    "pdf_file = \"docs_telco_v2.pdf\"\n",
+    "raw_pages = extract_text_from_pdf(pdf_file)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "37b29919",
+   "metadata": {},
+   "source": [
+    "Setup Chunking"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5e95cedb",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Total chunks yang dihasilkan: 14\n"
+     ]
+    }
+   ],
+   "source": [
+    "text_splitter = RecursiveCharacterTextSplitter(\n",
+    "    chunk_size=400,     \n",
+    "    chunk_overlap=50,   \n",
+    "    separators=[\"\\n\\n\", \"\\n\", \".\", \" \"]\n",
+    ")\n",
+    "\n",
+    "chunked_docs = []\n",
+    "chunk_id = 0\n",
+    "\n",
+    "for page in raw_pages:\n",
+    "    chunks = text_splitter.split_text(page[\"text\"])\n",
+    "    for chunk in chunks:\n",
+    "        chunked_docs.append({\n",
+    "            \"id\": f\"chunk_{chunk_id}\",\n",
+    "            \"text\": chunk,\n",
+    "            \"metadata\": page[\"metadata\"]\n",
+    "        })\n",
+    "        chunk_id += 1\n",
+    "\n",
+    "print(f\"Total chunks yang dihasilkan: {len(chunked_docs)}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6c0c822b",
+   "metadata": {},
+   "source": [
+    "Setup Keyword Search -> BM25"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ba0940f2",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "BM25 Model berhasil diinisialisasi.\n"
+     ]
+    }
+   ],
+   "source": [
+    "corpus_texts = [doc[\"text\"] for doc in chunked_docs]\n",
+    "\n",
+    "tokenized_corpus = [text.lower().split() for text in corpus_texts]\n",
+    "\n",
+    "bm25 = BM25Okapi(tokenized_corpus)\n",
+    "\n",
+    "def search_bm25(query, top_k=5):\n",
+    "    tokenized_query = query.lower().split()\n",
+    "    scores = bm25.get_scores(tokenized_query)\n",
+    "    top_indices = np.argsort(scores)[::-1][:top_k]\n",
+    "    \n",
+    "    results = []\n",
+    "    for idx in top_indices:\n",
+    "        if scores[idx] > 0:\n",
+    "            results.append({\n",
+    "                \"id\": chunked_docs[idx][\"id\"],\n",
+    "                \"text\": chunked_docs[idx][\"text\"],\n",
+    "                \"metadata\": chunked_docs[idx][\"metadata\"],\n",
+    "                \"score\": scores[idx]\n",
+    "            })\n",
+    "    return results\n",
+    "\n",
+    "print(\"BM25 Model berhasil diinisialisasi.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7969fcc0",
+   "metadata": {},
+   "source": [
+    "Setup Embedding Model -> huggingface:paraphrase-multilingual-MiniLM-L12-v2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1f14c08d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n",
+      "Loading weights: 100%|██████████| 199/199 [00:00<00:00, 3533.92it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Generating embeddings...\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Batches: 100%|██████████| 1/1 [00:00<00:00,  1.42it/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Shape dari embeddings: (14, 384)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# model billingual\n",
+    "embedding_model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')\n",
+    "\n",
+    "print(\"Generating embeddings...\")\n",
+    "corpus_embeddings = embedding_model.encode(corpus_texts, show_progress_bar=True)\n",
+    "\n",
+    "print(f\"Shape dari embeddings: {corpus_embeddings.shape}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "96883f38",
+   "metadata": {},
+   "source": [
+    "Setup ChromaDB"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8252e65f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Berhasil mengunggah 14 chunks ke ChromaDB lokal.\n"
+     ]
+    }
+   ],
+   "source": [
+    "chroma_client = chromadb.PersistentClient(path=\"./chroma_telco\")\n",
+    "\n",
+    "try:\n",
+    "    chroma_client.delete_collection(name=\"telco_collection\")\n",
+    "except:\n",
+    "    pass\n",
+    "\n",
+    "chroma_collection = chroma_client.create_collection(\n",
+    "    name=\"telco_collection\",\n",
+    "    metadata={\"hnsw:space\": \"cosine\"}\n",
+    ")\n",
+    "\n",
+    "ids = [doc[\"id\"] for doc in chunked_docs]\n",
+    "metadatas = [{\"page\": str(doc[\"metadata\"][\"page\"]), \"source\": doc[\"metadata\"][\"source\"]} for doc in chunked_docs]\n",
+    "\n",
+    "# load data ke ChromaDB\n",
+    "chroma_collection.add(\n",
+    "    embeddings=corpus_embeddings.tolist(),\n",
+    "    documents=corpus_texts,\n",
+    "    metadatas=metadatas,\n",
+    "    ids=ids\n",
+    ")\n",
+    "\n",
+    "print(f\"Berhasil mengunggah {len(chunked_docs)} chunks ke ChromaDB lokal.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dc091efb",
+   "metadata": {},
+   "source": [
+    "Setup Pinecone"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f1f7e02f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Membuat index Pinecone 'telco-search'...\n",
+      "Berhasil mengunggah 14 chunks ke Pinecone Cloud.\n"
+     ]
+    }
+   ],
+   "source": [
+    "PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')\n",
+    "pinecone_index = None\n",
+    "\n",
+    "if PINECONE_API_KEY:\n",
+    "    try:\n",
+    "        pc = Pinecone(api_key=PINECONE_API_KEY)\n",
+    "        index_name = \"telco-search\"\n",
+    "        \n",
+    "        if index_name not in pc.list_indexes().names():\n",
+    "            print(f\"Membuat index Pinecone '{index_name}'...\")\n",
+    "            pc.create_index(\n",
+    "                name=index_name,\n",
+    "                dimension=384,\n",
+    "                metric='cosine',\n",
+    "                spec=ServerlessSpec(cloud='aws', region='us-east-1')\n",
+    "            )\n",
+    "            \n",
+    "        pinecone_index = pc.Index(index_name)\n",
+    "        \n",
+    "        vectors = []\n",
+    "        for i, doc in enumerate(chunked_docs):\n",
+    "            vectors.append({\n",
+    "                \"id\": doc[\"id\"],\n",
+    "                \"values\": corpus_embeddings[i].tolist(),\n",
+    "                \"metadata\": {\n",
+    "                    \"text\": doc[\"text\"],\n",
+    "                    \"page\": str(doc[\"metadata\"][\"page\"]),\n",
+    "                    \"source\": doc[\"metadata\"][\"source\"]\n",
+    "                }\n",
+    "            })\n",
+    "            \n",
+    "        pinecone_index.upsert(vectors=vectors)\n",
+    "        print(f\"Berhasil mengunggah {len(vectors)} chunks ke Pinecone Cloud.\")\n",
+    "        \n",
+    "    except Exception as e:\n",
+    "        print(f\"Error pada Pinecone: {e}\")\n",
+    "else:\n",
+    "    print(\"PINECONE_API_KEY tidak ditemukan di .env. Melewati setup Pinecone.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3905e557",
+   "metadata": {},
+   "source": [
+    "Setup Hybrid Search -> RRF"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e33484f0",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Fungsi Hybrid Search (RRF) berhasil didefinisikan.\n"
+     ]
+    }
+   ],
+   "source": [
+    "def reciprocal_rank_fusion(bm25_results, vector_results, k=60):\n",
+    "    \"\"\"Menggabungkan hasil Keyword dan Semantic menggunakan skor RRF\"\"\"\n",
+    "    rrf_scores = {}\n",
+    "    \n",
+    "    # Skor untuk BM25\n",
+    "    for rank, item in enumerate(bm25_results):\n",
+    "        doc_id = item['id']\n",
+    "        if doc_id not in rrf_scores:\n",
+    "            rrf_scores[doc_id] = {'score': 0, 'data': item}\n",
+    "        rrf_scores[doc_id]['score'] += 1 / (k + rank + 1)\n",
+    "        \n",
+    "    # Skor untuk Vector Search\n",
+    "    for rank, item in enumerate(vector_results):\n",
+    "        doc_id = item['id']\n",
+    "        if doc_id not in rrf_scores:\n",
+    "            rrf_scores[doc_id] = {'score': 0, 'data': item}\n",
+    "        rrf_scores[doc_id]['score'] += 1 / (k + rank + 1)\n",
+    "        \n",
+    "    # Urutkan berdasarkan skor RRF tertinggi\n",
+    "    sorted_results = sorted(rrf_scores.values(), key=lambda x: x['score'], reverse=True)\n",
+    "    return [item['data'] for item in sorted_results]\n",
+    "\n",
+    "\n",
+    "def hybrid_search_chroma(query, top_k=3):\n",
+    "    bm25_res = search_bm25(query, top_k=top_k)\n",
+    "    \n",
+    "    query_embed = embedding_model.encode([query]).tolist()\n",
+    "    semantic_res_raw = chroma_collection.query(query_embeddings=query_embed, n_results=top_k)\n",
+    "    \n",
+    "    semantic_res = []\n",
+    "    if semantic_res_raw['ids'][0]:\n",
+    "        for i in range(len(semantic_res_raw['ids'][0])):\n",
+    "            semantic_res.append({\n",
+    "                \"id\": semantic_res_raw['ids'][0][i],\n",
+    "                \"text\": semantic_res_raw['documents'][0][i],\n",
+    "                \"metadata\": semantic_res_raw['metadatas'][0][i]\n",
+    "            })\n",
+    "            \n",
+    "    # 3. Gabungkan dengan RRF\n",
+    "    final_results = reciprocal_rank_fusion(bm25_res, semantic_res)\n",
+    "    return final_results[:top_k]\n",
+    "\n",
+    "\n",
+    "def hybrid_search_pinecone(query, top_k=3):\n",
+    "    if not pinecone_index:\n",
+    "        return [{\"text\": \"Pinecone tidak tersedia. Harap set API Key.\"}]\n",
+    "        \n",
+    "    bm25_res = search_bm25(query, top_k=top_k)\n",
+    "    \n",
+    "    query_embed = embedding_model.encode([query]).tolist()[0]\n",
+    "    semantic_res_raw = pinecone_index.query(vector=query_embed, top_k=top_k, include_metadata=True)\n",
+    "    \n",
+    "    semantic_res = []\n",
+    "    for match in semantic_res_raw['matches']:\n",
+    "        semantic_res.append({\n",
+    "            \"id\": match['id'],\n",
+    "            \"text\": match['metadata']['text'],\n",
+    "            \"metadata\": {\"page\": match['metadata']['page'], \"source\": match['metadata']['source']}\n",
+    "        })\n",
+    "        \n",
+    "    final_results = reciprocal_rank_fusion(bm25_res, semantic_res)\n",
+    "    return final_results[:top_k]\n",
+    "\n",
+    "print(\"Fungsi Hybrid Search (RRF) berhasil didefinisikan.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d5ca0c17",
+   "metadata": {},
+   "source": [
+    "test ChromaDB Hybrid Search."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "db523fa2",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "============================================================\n",
+      "HASIL HYBRID SEARCH (BM25 + CHROMADB)\n",
+      "============================================================\n",
+      "\n",
+      "[Query 1] : Berapa jumlah BTS di PT NTD.\n",
+      "  ➜ Hasil 1 (Hal 1): PT Nusantara Telekomunikasi Digital (NTD) 1. Profil Perusahaan PT Nusantara Telekomunikasi Digital (NTD) adalah perusahaan telekomunikasi nasional yang berdiri pada tahun 2008 dan berfokus pada penyediaan layanan jaringan seluler, internet broadband, serta solusi digital enterprise. Perusahaan ini beroperasi di lebih dari 150 kota di Indonesia dan memiliki lebih dari 35 juta pelanggan aktif\n",
+      "  ➜ Hasil 2 (Hal 4): ● Managed Security Services ● Data Center Colocation Kontribusi Pendapatan Segmen Kontribusi Pendapatan Retail 65% Enterprise 35% Data center utama berada di Jakarta dan Surabaya dengan sertifikasi Tier III. 4. Infrastruktur Jaringan NTD memiliki: ● 45.000 BTS aktif ● 120.000 km fiber optic backbone ● 3 pusat Network Operation Center (NOC) Ringkasan Infrastruktur Infrastruktur Jumlah BTS 45\n",
+      "------------------------------------------------------------\n",
+      "\n",
+      "[Query 2] : Berikan Langkah registrasi prabayar.\n",
+      "  ➜ Hasil 1 (Hal 5): . 6. Prosedur Pendaftaran Pelanggan Baru Prabayar Langkah Deskripsi 1 Beli kartu SIM 2 Registrasi NIK & KK 3 Aktivasi via SMS/App 4 Verifikasi biometrik (wilayah tertentu)\n",
+      "  ➜ Hasil 2 (Hal 6): Pascabayar Langkah Deskripsi 1 Isi formulir online 2 Upload KTP & NPWP 3 Verifikasi credit scoring 4 Tanda tangan kontrak digital 5 SIM dikirim 7. Sistem Penagihan (Billing System) Sistem billing menggunakan: ● Real-time charging (prabayar) ● Monthly billing cycle (pascabayar) Metode Pembayaran Metode Keterangan Mobile Banking Transfer langsung Virtual Account Otomatis terverifikasi\n",
+      "------------------------------------------------------------\n",
+      "\n",
+      "[Query 3] : Layanan apa saja yang ada di PT NTD.\n",
+      "  ➜ Hasil 1 (Hal 1): PT Nusantara Telekomunikasi Digital (NTD) 1. Profil Perusahaan PT Nusantara Telekomunikasi Digital (NTD) adalah perusahaan telekomunikasi nasional yang berdiri pada tahun 2008 dan berfokus pada penyediaan layanan jaringan seluler, internet broadband, serta solusi digital enterprise. Perusahaan ini beroperasi di lebih dari 150 kota di Indonesia dan memiliki lebih dari 35 juta pelanggan aktif\n",
+      "  ➜ Hasil 2 (Hal 1): . NTD menyediakan layanan 4G LTE dan telah mulai melakukan ekspansi jaringan 5G secara bertahap di kota-kota besar seperti Jakarta, Surabaya, Bandung, dan Medan. Selain layanan ritel, NTD juga memiliki divisi Business & Enterprise yang melayani kebutuhan konektivitas korporasi, data center, dan solusi cloud\n",
+      "------------------------------------------------------------\n",
+      "\n",
+      "[Query 4] : Berikan daftar paket Internet Paling Murah.\n",
+      "  ➜ Hasil 1 (Hal 2): 2. Layanan Konsumen (Retail Services) a. Paket Prabayar Paket prabayar menyediakan fleksibilitas bagi pelanggan tanpa kontrak jangka panjang. Pilihan paket: ● Paket internet harian ● Paket internet mingguan ● Paket internet bulanan ● Paket combo (internet + telepon + SMS) Tabel Paket Internet Bulanan Nama Paket Kuota Harga Benefit Tambahan Basic 15GB 15GB Rp 75\n",
+      "  ➜ Hasil 2 (Hal 2): .000 Akses aplikasi edukasi Smart 50GB 50GB Rp 125.000 Bonus 5GB malam Premium 100GB 100GB Rp 200.000 Gratis streaming Ultra 150GB 150GB Rp 250.000 Prioritas jaringan b. Paket Pascabayar Paket pascabayar menawarkan sistem tagihan bulanan dengan prioritas jaringan dan customer service khusus. Paket Harga/Bulan Kuota Benefit\n",
+      "------------------------------------------------------------\n"
+     ]
+    }
+   ],
+   "source": [
+    "test_queries = [\n",
+    "    \"Berapa jumlah BTS di PT NTD.\",\n",
+    "    \"Berikan Langkah registrasi prabayar.\",\n",
+    "    \"Layanan apa saja yang ada di PT NTD.\",\n",
+    "    \"Berikan daftar paket Internet Paling Murah.\"\n",
+    "]\n",
+    "\n",
+    "print(\"=\"*60)\n",
+    "print(\"HASIL HYBRID SEARCH (BM25 + CHROMADB)\")\n",
+    "print(\"=\"*60)\n",
+    "\n",
+    "for idx, query in enumerate(test_queries, 1):\n",
+    "    print(f\"\\n[Query {idx}] : {query}\")\n",
+    "    results = hybrid_search_chroma(query, top_k=2)\n",
+    "    \n",
+    "    for i, res in enumerate(results, 1):\n",
+    "        page = res.get('metadata', {}).get('page', 'Unknown')\n",
+    "        print(f\"  ➜ Hasil {i} (Hal {page}): {res['text']}\")\n",
+    "    print(\"-\" * 60)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a8833b34",
+   "metadata": {},
+   "source": [
+    "test pinecone Hybrid Search."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "35d0b8fd",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "============================================================\n",
+      "HASIL HYBRID SEARCH (BM25 + PINECONE)\n",
+      "============================================================\n",
+      "\n",
+      "[Query 1] : Berapa jumlah BTS di PT NTD.\n",
+      "  ➜ Hasil 1 (Hal 1): PT Nusantara Telekomunikasi Digital (NTD) 1. Profil Perusahaan PT Nusantara Telekomunikasi Digital (NTD) adalah perusahaan telekomunikasi nasional yang berdiri pada tahun 2008 dan berfokus pada penyediaan layanan jaringan seluler, internet broadband, serta solusi digital enterprise. Perusahaan ini beroperasi di lebih dari 150 kota di Indonesia dan memiliki lebih dari 35 juta pelanggan aktif\n",
+      "  ➜ Hasil 2 (Hal 4): ● Managed Security Services ● Data Center Colocation Kontribusi Pendapatan Segmen Kontribusi Pendapatan Retail 65% Enterprise 35% Data center utama berada di Jakarta dan Surabaya dengan sertifikasi Tier III. 4. Infrastruktur Jaringan NTD memiliki: ● 45.000 BTS aktif ● 120.000 km fiber optic backbone ● 3 pusat Network Operation Center (NOC) Ringkasan Infrastruktur Infrastruktur Jumlah BTS 45\n",
+      "------------------------------------------------------------\n",
+      "\n",
+      "[Query 2] : Berikan Langkah registrasi prabayar.\n",
+      "  ➜ Hasil 1 (Hal 5): . 6. Prosedur Pendaftaran Pelanggan Baru Prabayar Langkah Deskripsi 1 Beli kartu SIM 2 Registrasi NIK & KK 3 Aktivasi via SMS/App 4 Verifikasi biometrik (wilayah tertentu)\n",
+      "  ➜ Hasil 2 (Hal 6): Pascabayar Langkah Deskripsi 1 Isi formulir online 2 Upload KTP & NPWP 3 Verifikasi credit scoring 4 Tanda tangan kontrak digital 5 SIM dikirim 7. Sistem Penagihan (Billing System) Sistem billing menggunakan: ● Real-time charging (prabayar) ● Monthly billing cycle (pascabayar) Metode Pembayaran Metode Keterangan Mobile Banking Transfer langsung Virtual Account Otomatis terverifikasi\n",
+      "------------------------------------------------------------\n",
+      "\n",
+      "[Query 3] : Layanan apa saja yang ada di PT NTD.\n",
+      "  ➜ Hasil 1 (Hal 1): PT Nusantara Telekomunikasi Digital (NTD) 1. Profil Perusahaan PT Nusantara Telekomunikasi Digital (NTD) adalah perusahaan telekomunikasi nasional yang berdiri pada tahun 2008 dan berfokus pada penyediaan layanan jaringan seluler, internet broadband, serta solusi digital enterprise. Perusahaan ini beroperasi di lebih dari 150 kota di Indonesia dan memiliki lebih dari 35 juta pelanggan aktif\n",
+      "  ➜ Hasil 2 (Hal 1): . NTD menyediakan layanan 4G LTE dan telah mulai melakukan ekspansi jaringan 5G secara bertahap di kota-kota besar seperti Jakarta, Surabaya, Bandung, dan Medan. Selain layanan ritel, NTD juga memiliki divisi Business & Enterprise yang melayani kebutuhan konektivitas korporasi, data center, dan solusi cloud\n",
+      "------------------------------------------------------------\n",
+      "\n",
+      "[Query 4] : Berikan daftar paket Internet Paling Murah.\n",
+      "  ➜ Hasil 1 (Hal 2): 2. Layanan Konsumen (Retail Services) a. Paket Prabayar Paket prabayar menyediakan fleksibilitas bagi pelanggan tanpa kontrak jangka panjang. Pilihan paket: ● Paket internet harian ● Paket internet mingguan ● Paket internet bulanan ● Paket combo (internet + telepon + SMS) Tabel Paket Internet Bulanan Nama Paket Kuota Harga Benefit Tambahan Basic 15GB 15GB Rp 75\n",
+      "  ➜ Hasil 2 (Hal 2): .000 Akses aplikasi edukasi Smart 50GB 50GB Rp 125.000 Bonus 5GB malam Premium 100GB 100GB Rp 200.000 Gratis streaming Ultra 150GB 150GB Rp 250.000 Prioritas jaringan b. Paket Pascabayar Paket pascabayar menawarkan sistem tagihan bulanan dengan prioritas jaringan dan customer service khusus. Paket Harga/Bulan Kuota Benefit\n",
+      "------------------------------------------------------------\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"=\"*60)\n",
+    "print(\"HASIL HYBRID SEARCH (BM25 + PINECONE)\")\n",
+    "print(\"=\"*60)\n",
+    "\n",
+    "if pinecone_index:\n",
+    "    for idx, query in enumerate(test_queries, 1):\n",
+    "        print(f\"\\n[Query {idx}] : {query}\")\n",
+    "        results = hybrid_search_pinecone(query, top_k=2)\n",
+    "        \n",
+    "        for i, res in enumerate(results, 1):\n",
+    "            page = res.get('metadata', {}).get('page', 'Unknown')\n",
+    "            print(f\"  ➜ Hasil {i} (Hal {page}): {res.get('text', res)}\")\n",
+    "        print(\"-\" * 60)\n",
+    "else:\n",
+    "    print(\"Pinecone tidak terkonfigurasi. Silakan periksa .env Anda.\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "ai-training",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
