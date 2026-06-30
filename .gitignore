@@ -52,3 +52,7 @@ Thumbs.db
 **/chroma_telco/
 **/content/chroma.sqlite3
 *.sqlite3
+
+# Exclude local course repo copy
+Hacktiv8-Assignments/
+
